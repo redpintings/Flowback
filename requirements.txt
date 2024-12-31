@@ -1,0 +1,21 @@
+aiohttp==3.8.1
+celery==5.2.7
+elasticsearch==7.17.3
+loguru==0.5.3
+PyExecJS==1.5.1
+requests
+pymongo
+argparse
+tqdm
+httpx
+Js2Py
+watchdog
+tldextract
+lxml
+beautifulsoup4
+pytz
+chardet
+tenacity
+# ronglian-sms-sdk
+-e .
+# Add other dependencies here

@@ -92,6 +92,9 @@ backflow list
 backflow crawl baijiahao  # Single run
 backflow crawl jinritoutiao  # Single run
 
+# Single run  The default is 20 pages. If you want to set page numbers, use the --page parameter
+# For detailed parameters, please refer to the default parameter START_PAGE END_PAGE PAGE_STEP in settings.py
+backflow crawl baijiahao --page 4  
 # 运行所有爬虫 多线程单机运行
 # main_back.py  # Can run all crawlers
 

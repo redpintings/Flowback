@@ -25,25 +25,21 @@ class {spider_name.capitalize()}(BackFlow):
                           "Gecko) Chrome/108.0.0.0 Safari/537.36"
         }}
 
-    def get_page_request(self, page):
+    async def get_page_request(self, page):
         url = 'http://example.com/api/data?page={{}}'.format(page)
         yield Request('GET', url=url, headers=self.headers, cookies=self.ck, meta={{'page': page}})
 
     async def parse(self, response):
-        try:
-            resp = response.json()
-            datas = resp.get('data', {{}})
-            if not datas:
-                print(f'{spider_name} cookie might be expired or no data returned.')
-                return
-            for con in datas:
+        resp = response.json()
+        datas = resp.get('data', {{}})
+        if not datas:
+            print(f'{spider_name} cookie might be expired or no data returned.')
+            return
+        for con in datas:
 
-                news = {{
-                    'url': con.get('item_id', ''),
-                }}
-                yield news
-        except Exception as e:
-            logger.error(f"An error occurred while parsing the response: {{e}}")
-            traceback.print_exc()
+            news = {{
+                'url': con.get('item_id', ''),
+            }}
+            yield news
         """
     return spider_template

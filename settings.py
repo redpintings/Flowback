@@ -16,7 +16,7 @@ DATA_FILE_PATH = 'data/output.json'
 API_ENDPOINT = 'http://example.com/api/data'
 
 # Other settings， 前提是你使用了 --page 参数
-START_PAGE = 0  # The default starting page number to crawl
+START_PAGE = 1  # The default starting page number to crawl
 END_PAGE = 200  # The default ending page number to crawl
 PAGE_STEP = 1  # The default step size to crawl the pages
 

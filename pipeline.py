@@ -3,6 +3,7 @@
 # @Author  : ysl
 # @File    : pipeline.py
 
+import os
 import json
 import pymongo
 import asyncio
@@ -20,18 +21,29 @@ class Pipeline:
         Process the item by storing it in a file, MongoDB, and an API endpoint.
         """
         # Store item in file and MongoDB synchronously
-        # self.store_in_file(item)
+        self.store_in_file(item)
         # self.store_in_mongo(item)
 
         # Store item in API asynchronously
-        await self.store_in_api(item)
+        # await self.store_in_api(item)
 
     @staticmethod
     def store_in_file(item):
         """
-        Store the item in a JSON file.
+        Store the item in a JSON file. If the file does not exist, create it.
         """
         try:
+            # Check if the directory exists, if not, create it
+            directory = os.path.dirname(DATA_FILE_PATH)
+            if directory and not os.path.exists(directory):
+                os.makedirs(directory)
+
+            # Check if the file exists, if not, create it
+            if not os.path.exists(DATA_FILE_PATH):
+                with open(DATA_FILE_PATH, 'w') as f:
+                    pass  # Just create an empty file
+
+            # Append the item to the file
             with open(DATA_FILE_PATH, 'a') as f:
                 json.dump(item, f)
                 f.write('\n')

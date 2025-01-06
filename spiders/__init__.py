@@ -3,14 +3,7 @@
 # @Author  : ysl
 # @File    : __init__.py.py
 
-from spiders.dz_baijiehao import DzBaijiehao
-from spiders.dz_toutiao import DzToutiao
-from spiders.dz_wangyi import DzWangyi
-from spiders.dz_xinlang import DzXinlang
-from spiders.dz_beijinghao import DzBeijinghao
-from spiders.dz_yidianhao import DzYidianhao
-from spiders.dz_renminhao import DzRenminhao
-
+from spiders.dongfangcaifu import Dongfangcaifu
 # 活跃的 spider 列表
 """
     def url_check(url):

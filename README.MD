@@ -4,7 +4,7 @@
 
 
 <div align="center">
-    <a href="https://gitlab.qiluyidian.net/bigdata/dz_data_back.git">
+    <a href="https://github.com/redpintings/Flowback">
         <img alt="GitHub Actions Workflow Status" src="https://image.dzplus.dzng.com/2024/06/06/17176669138534.jpg" />
     </a>
 </div>
@@ -182,7 +182,7 @@ demo server:
 ```
 ### 框架运行步骤
 <div align="center">
-    <a href="https://gitlab.qiluyidian.net/bigdata/dz_data_back.git">
+    <a href="https://github.com/redpintings/Flowback">
         <img alt="GitHub Actions Workflow Status" src="https://image.dzplus.dzng.com/2024/07/04/17200855857642.jpg" />
     </a>
 </div>

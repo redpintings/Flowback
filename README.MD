@@ -122,6 +122,8 @@ backflow addspider newspider
 
 ### 模版爬虫代码
 
+  > 当你使用命令`backflow addspider newspider`创建好一个新的spider模版后，请确保你的爬虫代码请求 可以正确采集到数据
+
 ```python
 from loguru import logger
 from utils.get_cookie import GetCookie
@@ -142,39 +144,34 @@ class {spider_name.capitalize()}(BackFlow):
                           "Gecko) Chrome/108.0.0.0 Safari/537.36"
         }}
 
-    def get_page_request(self, page):
+    async def get_page_request(self, page):
         url = 'http://example.com/api/data?page={{}}'.format(page)
         return Request('GET', url=url, headers=self.headers, cookies=self.ck, meta={{'page': page}})
 
     async def parse(self, response):
-        try:
-            resp = response.json()
-            datas = resp.get('data', {{}})
-            if not datas:
-                print(f'{spider_name} cookie might be expired or no data returned.')
-                return
-            for con in datas:
-                news = {{
-                    'url': con.get('item_id', ''),
-                }}
-                yield news
-        except Exception as e:
-            logger.error(f"An error occurred while parsing the response: {{e}}")
-            traceback.print_exc()
+      
+        resp = response.json()
+        datas = resp.get('data', {{}})
+        if not datas:
+            print(f'{spider_name} cookie might be expired or no data returned.')
+            return
+        for con in datas:
+            news = {{
+                'url': con.get('item_id', ''),
+            }}
+            yield news
+        
 ```
 
-### 服务器配置
+### 正式服务器配置
 
 ```yaml
 server:
-  120.46.165.249
-  120.46.76.162
-  123.249.81.190
-  121.36.5.44
+  120.xx.xx.249
 
 demo server:
-  host: 120.46.165.249
-  path: /opt/workstation/dz_data_back/
+  host: 120.xx.xx.249
+  path: /opt/workstation/xx/
 
 定时任务:
   crontab/supervisor

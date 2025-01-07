@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Author  : ysl
 # @File    : template_project.py
+import os
 
 
 def settings():
@@ -9,7 +10,7 @@ def settings():
 #!/usr/bin/ python
 # -*- coding: utf-8 -*-
 
-# @File    : settings.py.py
+# @File    : settings.py
 
 # Configuration for the project
 
@@ -25,9 +26,8 @@ API_ENDPOINT = 'http://example.com/api/data'
 
 # Other settings， 前提是你使用了 --page 参数
 START_PAGE = 0  # The default starting page number to crawl
-END_PAGE = 200  # The default ending page number to crawl
+END_PAGE = 20  # The default ending page number to crawl
 PAGE_STEP = 1  # The default step size to crawl the pages
-
 
 MAX_RETRIES = 3  # The maximum number of retries for each request
 
@@ -47,42 +47,53 @@ def pipeline():
     pipeline_template = """
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# @Author  : ysl
 # @File    : pipeline.py
 
+import os
 import json
 import pymongo
 import asyncio
-from tasks import Task
 from settings import MONGO_URI, MONGO_DATABASE, DATA_FILE_PATH
-
 
 class Pipeline:
     def __init__(self):
         # Initialize Task without creating Semaphore here
-        self.task = Task()
+        pass
 
     async def process_item(self, item):
         # Process the item by storing it in a file, MongoDB, and an API endpoint.
         # Store item in file and MongoDB synchronously
-        # self.store_in_file(item)
+        self.store_in_file(item)
         # self.store_in_mongo(item)
 
         # Store item in API asynchronously
-        await self.store_in_api(item)
+        # await self.store_in_api(item)
 
     @staticmethod
     def store_in_file(item):
-        # Store the item in a JSON file.
+        # Store the item in a JSON file. If the file does not exist, create it.
         try:
+            # Check if the directory exists, if not, create it
+            directory = os.path.dirname(DATA_FILE_PATH)
+            if directory and not os.path.exists(directory):
+                os.makedirs(directory)
+
+            # Check if the file exists, if not, create it
+            if not os.path.exists(DATA_FILE_PATH):
+                with open(DATA_FILE_PATH, 'w') as f:
+                    pass  # Just create an empty file
+
+            # Append the item to the file
             with open(DATA_FILE_PATH, 'a') as f:
                 json.dump(item, f)
-                f.write('\n')
+                f.write('\\n')
         except Exception as e:
             print(f"Error storing item in file: {e}")
 
     @staticmethod
     def store_in_mongo(item):
-       # Store the item in a MongoDB collection.
+        # Store the item in a MongoDB collection.
         try:
             client = pymongo.MongoClient(MONGO_URI)
             db = client[MONGO_DATABASE]
@@ -93,9 +104,8 @@ class Pipeline:
 
     async def store_in_api(self, item):
         # Send the item to an API endpoint.
-        # await self.task.send_msg(item)
         pass
-    
+
     """
     return pipeline_template
 
@@ -105,8 +115,14 @@ def downloadMiddleware():
 import random
 from loguru import logger
 import settings
-from backflow.middleware import DownloadMiddleware
+# from backflow.middleware import DownloadMiddleware # Assuming this is in a relative path
 
+class DownloadMiddleware: # Placeholder if backflow is not available
+    async def process_request(self, request):
+        return request
+
+    async def process_response(self, request, response):
+        return response
 
 class UserAgentMiddleware(DownloadMiddleware):
     USER_AGENTS = [
@@ -121,7 +137,6 @@ class UserAgentMiddleware(DownloadMiddleware):
         request.headers['User-Agent'] = user_agent
         return request
 
-
 class RetryMiddleware(DownloadMiddleware):
     MAX_RETRIES = settings.MAX_RETRIES
 
@@ -132,7 +147,6 @@ class RetryMiddleware(DownloadMiddleware):
             request.meta['retry_times'] = retry_times
             return await self.process_request(request)  # Retry the request
         return response
-
 
 class ProxyMiddleware(DownloadMiddleware):
     PROXIES = [
@@ -152,12 +166,15 @@ class ProxyMiddleware(DownloadMiddleware):
 
 def task():
     task_template = """
+from celery import Celery
+from loguru import logger
+from utils.save_com import Com
+from utils.celery_app import app
+from backflow.runner import SpiderRunner
 import traceback
 import asyncio
 import httpx
 from celery import Celery
-# from utils.ding import send_dingding
-
 
 @app.task
 def run_spider(name, page):
@@ -173,9 +190,9 @@ def run_spider(name, page):
             print(f"An error occurred while running spider '{name}' for page {page}: {e}")
             traceback.print_exc()
             trace = traceback.format_exc()
-            # await send_dingding(f'An error occurred while running spider@xx: \n {trace}')
 
     asyncio.run(async_run_spider())
+
     """
     return task_template
 
@@ -194,14 +211,104 @@ class CeleryConf(object):
     REDIS_DB_RESULT = 11
     REDIS_PWD = ''
 
-
-# js
-yidian_js = "xxx"
-# api
-get_cookie_api = "xxx"
 paths = "/Users/ysl/Flowback/spiders"  # 你的当前的项目spiders路径
 save_url = ""
 save_com = ''
 celery_path = "xxx" # 你的当前的项目路径
     """
     return conf_template
+
+
+def conf_init():
+    conf_init = """
+    from .local import *
+    """
+    return conf_init
+
+
+def spider(spider_name):
+    spider_template = f"""
+from loguru import logger
+from utils.tools import Tools
+from backflow.base import BackFlow
+from backflow.middleware import Request
+import traceback
+
+class {spider_name.capitalize()}(BackFlow):
+    name = '{spider_name}'
+
+    def __init__(self):
+        super().__init__()
+        self.ck = None
+        self.headers = {{
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like "
+                          "Gecko) Chrome/108.0.0.0 Safari/537.36"
+        }}
+
+    async def get_page_request(self, page):
+        url = 'http://example.com/api/data?page={{}}'.format(page)
+        yield Request('GET', url=url, headers=self.headers, cookies=self.ck, meta={{'page': page}})
+
+    async def parse(self, response):
+        resp = response.json()
+        datas = resp.get('data', {{}})
+        if not datas:
+            print(f'{spider_name} cookie might be expired or no data returned.')
+            return
+        for con in datas:
+
+            news = {{
+                'url': con.get('item_id', ''),
+            }}
+            yield news
+        """
+    return spider_template
+
+
+def create_project_structure(project_name):
+    """Create necessary directories and files for the project."""
+    # Define project directories and files in an order that ensures
+    # directories are created before files within them.
+    structure = [
+        f"{project_name}",
+        f"{project_name}/spiders",
+        (f"{project_name}/spiders/new_spider.py", spider('newspider')),
+        f"{project_name}/conf",
+        (f"{project_name}/conf/__init__.py", conf_init()),
+        (f"{project_name}/conf/local.py", conf()),
+        (f"{project_name}/settings.py", settings()),
+        (f"{project_name}/downloadMiddleware.py", downloadMiddleware()),
+        (f"{project_name}/pipelines.py", pipeline()),
+        (f"{project_name}/tasks.py", task()),
+    ]
+
+    # Create directories and files
+    for item in structure:
+        if isinstance(item, str):  # It's a directory
+            if not os.path.exists(item):
+                os.makedirs(item)
+                print(f"Created directory: '{item}'")
+            else:
+                print(f"'{item}' already exists. Skipping creation.")
+        elif isinstance(item, tuple):  # It's a file with content
+            path, content_func = item
+            dirname = os.path.dirname(path)
+            if dirname and not os.path.exists(dirname):
+                os.makedirs(dirname)
+                print(f"Created directory: '{dirname}'")
+            if not os.path.exists(path):
+                with open(path, 'w') as f:
+                    if content_func:
+                        f.write(content_func)
+                    else:
+                        f.write("# This is an auto-generated file.\n")
+                print(f"Created file: '{path}'")
+            else:
+                print(f"'{path}' already exists. Skipping creation.")
+
+    print(f"Project '{project_name}' has been created successfully!")
+
+
+if __name__ == '__main__':
+    project_name = "my_crawler_project"
+    create_project_structure(project_name)

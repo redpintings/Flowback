@@ -20,6 +20,7 @@ from backflow.base import BackFlow
 from loguru import logger
 from downloadMiddleware import UserAgentMiddleware, RetryMiddleware, ProxyMiddleware
 from .middleware import MiddlewareManager
+from .template_project import create_project_structure
 
 
 class UpperAttrMetaclass(type):
@@ -168,31 +169,6 @@ class SpiderRunner:
         print(f"Total run time: {total_time:.2f} seconds")
 
 
-def create_project_structure(project_name):
-    """Create necessary directories and files for the project."""
-    # Define project directories and files
-    structure = [
-        f"{project_name}",
-        f"{project_name}/spiders",
-        f"{project_name}/conf",
-        f"{project_name}/conf/__init__.py",
-        f"{project_name}/conf/local.py",
-        f"{project_name}/settings.py",
-        f"{project_name}/middlewares.py",
-        f"{project_name}/pipelines.py",
-        f"{project_name}/tasks.py",
-    ]
-
-    # Create directories and files
-    for path in structure:
-        if '.' in path:
-            with open(path, 'w') as f:
-                f.write("# This is an auto-generated file.\n")
-        else:
-            os.makedirs(path, exist_ok=True)
-    print(f"Project '{project_name}' has been created successfully!")
-
-
 def create_spider_file(spider_name):
     from .template import template
     spider_template = template(spider_name=spider_name)
@@ -218,8 +194,9 @@ def main():
     addspider_parser = subparsers.add_parser("addspider", help="Add a new spider")
     addspider_parser.add_argument("spider_name", default='newspider', help="The name of the new spider to add")
 
-    addspider_parser = subparsers.add_parser("new", help="Add a new spider project")
-    addspider_parser.add_argument("project_name", default='NewSpiders', help="The name of the new spider project to add")
+    addspider_parser = subparsers.add_parser("new", help="Add a new project")
+    addspider_parser.add_argument("project_name", default='NewSpiders',
+                                  help="The name of the new spider project to add")
 
     args = parser.parse_args()
 

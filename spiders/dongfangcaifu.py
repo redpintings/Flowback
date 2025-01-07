@@ -1,5 +1,4 @@
 from loguru import logger
-from utils.get_cookie import GetCookie
 from utils.tools import Tools
 from backflow.base import BackFlow
 from backflow.middleware import Request

@@ -10,9 +10,8 @@ from tenacity import retry, stop_after_attempt, wait_fixed, before_log, after_lo
 
 # Send DingDing message
 @retry(stop=stop_after_attempt(2), wait=wait_fixed(10))
-async def send_dingding(msg):
-    url = "xx"
-    headers = {'x-token': "xx"}
+async def send_dingding(msg, url=None, token=None):
+    headers = {'x-token': token}
     data = {
         "content": msg
     }
@@ -29,4 +28,4 @@ async def send_dingding(msg):
 
 
 if __name__ == '__main__':
-    asyncio.run(send_dingding("test 12111"))
+    asyncio.run(send_dingding("test 12111", 'xxx', 'xxx'))

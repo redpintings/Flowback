@@ -7,14 +7,13 @@ import os
 import json
 import pymongo
 import asyncio
-from tasks import Task
 from settings import MONGO_URI, MONGO_DATABASE, DATA_FILE_PATH
 
 
 class Pipeline:
     def __init__(self):
         # Initialize Task without creating Semaphore here
-        self.task = Task()
+        pass
 
     async def process_item(self, item):
         """

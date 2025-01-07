@@ -17,7 +17,6 @@ from bs4 import BeautifulSoup
 from lxml import html
 # from loguru import logger
 from urllib.parse import urlparse, urljoin
-from utils.es_coon import EsConn
 from logging.handlers import RotatingFileHandler
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
@@ -31,7 +30,12 @@ logger.setLevel(logging.INFO)
 
 # Ensure logger is only configured once
 if not logger.hasHandlers():
-    log_dir = os.path.join(os.path.dirname(os.getcwd()), 'log')
+    # Get the directory of the current file (base.py)
+    current_file_dir = os.path.dirname(__file__)
+    # Go up one level to the project root
+    project_root_dir = os.path.dirname(current_file_dir)
+    # Define the log directory within the project root
+    log_dir = os.path.join(project_root_dir, 'log')
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, 'execution_log.log')
 

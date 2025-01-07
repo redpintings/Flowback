@@ -8,8 +8,10 @@ from setuptools import setup, find_packages
 from setuptools.command.install import install
 import subprocess
 from tqdm import tqdm
-from typing import Mapping, Type
-from distutils.cmd import Command
+import sys  # Import the sys module
+
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
 
 class CustomInstallCommand(install):
@@ -24,7 +26,7 @@ class CustomInstallCommand(install):
         if requirements:
             for req in tqdm(requirements, desc="Installing dependencies"):
                 try:
-                    subprocess.check_call([self.executable, "-m", "pip", "install", req])
+                    subprocess.check_call([sys.executable, "-m", "pip", "install", req])
                 except subprocess.CalledProcessError as e:
                     print(f"Failed to install {req}: {e}")
                     raise
@@ -32,17 +34,35 @@ class CustomInstallCommand(install):
 
 setup(
     name='backflow',
-    version='0.1.2',
+    version='0.1.3',
+    author='ysl',  # 替换为你的名字
+    author_email='runfastpluszz@gmail.com',  # 替换为你的邮箱
+    description='A simple crawler framework that implements both single run and distributed run based on Celery,'
+                ' allowing you to write your crawler code as you please',  # 替换为你的项目简短描述
+    long_description=long_description,
+    long_description_content_type="text/markdown",  # 如果你的 README 是 Markdown
+    url='https://github.com/redpintings/Flowback',  # 替换为你的项目 GitHub 仓库地址
+    license='MIT',  # 替换为你的开源协议
     packages=find_packages(),
     install_requires=[
-        # List your dependencies here
+        'aiohttp==3.10.11',
+        'celery==5.2.7',
+        'elasticsearch==7.17.3',
+        'loguru',
+        'PyExecJS',
         'requests',
-        'httpx',
+        'pymongo',
+        'argparse',
         'tqdm',
-        'chardet',
+        'httpx',
+        'Js2Py',
+        'watchdog',
         'tldextract',
-        'watchdog'
-        # Add other dependencies as needed
+        'lxml',
+        'beautifulsoup4',
+        'pytz',
+        'chardet',
+        'tenacity',
     ],
     entry_points={
         'console_scripts': [
@@ -51,5 +71,11 @@ setup(
     },
     cmdclass={
         'install': CustomInstallCommand,
-    }  # type: Mapping[str, Type[Command]]
+    },
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",  # 替换为你的开源协议
+        "Operating System :: OS Independent",
+    ],
+    python_requires='>=3.6',  # 指定支持的 Python 版本
 )

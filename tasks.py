@@ -5,7 +5,7 @@ import asyncio
 from typing import Dict, Union
 from loguru import logger
 from utils.celery_app import app
-from backflow.runner import SpiderRunner
+from Backflows.runner import SpiderRunner
 from tenacity import retry, stop_after_attempt, wait_exponential
 import traceback
 import asyncio

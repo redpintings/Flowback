@@ -6,7 +6,7 @@
 import random
 from loguru import logger
 import settings
-from backflow.middleware import DownloadMiddleware
+from Backflows.middleware import DownloadMiddleware
 
 
 class UserAgentMiddleware(DownloadMiddleware):

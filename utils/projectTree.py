@@ -28,5 +28,5 @@ def print_python_files_tree(path, indent=0):
 
 
 if __name__ == '__main__':
-    project_path = '/Users/ysl/dz_data_back'
+    project_path = '/Users/ysl/Flowback'
     print_python_files_tree(project_path)

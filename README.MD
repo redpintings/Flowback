@@ -122,10 +122,9 @@ backflow addspider newspider
 
 ```python
 from loguru import logger
-from utils.get_cookie import GetCookie
 from utils.tools import Tools
-from backflow.base import BackFlow
-from backflow.middleware import Request
+from Backflows.base import BackFlow
+from Backflows.middleware import Request
 import traceback
 
 
@@ -145,7 +144,7 @@ class {spider_name.capitalize()}(BackFlow):
         return Request('GET', url=url, headers=self.headers, cookies=self.ck, meta={{'page': page}})
 
     async def parse(self, response):
-      
+
         resp = response.json()
         datas = resp.get('data', {{}})
         if not datas:
@@ -156,7 +155,7 @@ class {spider_name.capitalize()}(BackFlow):
                 'url': con.get('item_id', ''),
             }}
             yield news
-        
+
 ```
 
 ### 正式服务器配置

@@ -1,4 +1,4 @@
-aiohttp
+aiohttp==3.10.11
 celery==5.2.7
 elasticsearch==7.17.3
 loguru
@@ -16,6 +16,7 @@ beautifulsoup4
 pytz
 chardet
 tenacity
+parsel
 # ronglian-sms-sdk
 -e .
 # Add other dependencies here

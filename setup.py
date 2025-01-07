@@ -34,7 +34,7 @@ class CustomInstallCommand(install):
 
 setup(
     name='backflow',
-    version='0.1.3',
+    version='0.1.5',
     author='ysl',  # 替换为你的名字
     author_email='runfastpluszz@gmail.com',  # 替换为你的邮箱
     description='A simple crawler framework that implements both single run and distributed run based on Celery,'
@@ -44,6 +44,8 @@ setup(
     url='https://github.com/redpintings/Flowback',  # 替换为你的项目 GitHub 仓库地址
     license='MIT',  # 替换为你的开源协议
     packages=find_packages(),
+    py_modules=['downloadMiddleware', 'tasks'],  # 模块
+    data_files=[('config', ['settings.py'])],   # 配置文件
     install_requires=[
         'aiohttp==3.10.11',
         'celery==5.2.7',
@@ -63,10 +65,11 @@ setup(
         'pytz',
         'chardet',
         'tenacity',
+        'parsel',
     ],
     entry_points={
         'console_scripts': [
-            'backflow=backflow.runner:main',
+            'backflow=Backflows.runner:main',
         ],
     },
     cmdclass={

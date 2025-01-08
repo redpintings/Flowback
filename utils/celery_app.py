@@ -3,9 +3,11 @@
 # @Author  : ysl
 # @File    : celery_app.py
 
+import os
+import sys
+sys.path.insert(0, os.getcwd())
 from celery import Celery
 from conf import CeleryConf
-
 name = CeleryConf.REDIS_NAME
 host = CeleryConf.REDIS_HOST
 port = CeleryConf.REDIS_POST

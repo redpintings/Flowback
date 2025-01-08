@@ -7,7 +7,7 @@ import os
 import json
 import pymongo
 import asyncio
-from settings import MONGO_URI, MONGO_DATABASE, DATA_FILE_PATH
+from .settings import MONGO_URI, MONGO_DATABASE, DATA_FILE_PATH
 
 
 class Pipeline:

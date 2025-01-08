@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 # @Author  : ysl
 # @File    : runner.py
-# @Software: PyCharm
 import os
 import sys
 import time
@@ -11,16 +10,50 @@ import inspect
 import argparse
 import traceback
 import requests
-# from conf import Page
-import settings
 import httpx
 import asyncio
-# from utils.ding import DingDingSender
-from Backflows.base import BackFlow
+import importlib.util
+import inspect
 from loguru import logger
-from downloadMiddleware import UserAgentMiddleware, RetryMiddleware, ProxyMiddleware
-from .middleware import MiddlewareManager
-from .template_project import create_project_structure
+
+PROJECT_CONTEXT = False  # Initialize PROJECT_CONTEXT
+
+
+# Function to check if running within a project context
+def is_project_context():
+        return os.path.exists(os.path.join(os.getcwd(), 'settings.py'))
+
+
+# print('is_project_context', os.path.join(os.getcwd()), is_project_context())
+spider_dir = os.path.join(os.getcwd(), 'spiders')
+# print('spider_dir', spider_dir)
+# If in a project context, add the current directory to sys.path
+if is_project_context():
+    sys.path.insert(0, os.getcwd())
+    PROJECT_CONTEXT = True
+    try:
+        import settings
+        from downloadMiddleware import UserAgentMiddleware, RetryMiddleware, ProxyMiddleware
+        from pipeline import Pipeline
+
+        logger.info("Running in project context.")
+    except ImportError as e:
+        logger.error(f"Error importing project modules: {e}")
+        sys.exit(1)  # Exit if essential project modules are missing
+else:
+    try:
+        from backflow_core import settings
+        from backflow_core.downloadMiddleware import UserAgentMiddleware, RetryMiddleware, ProxyMiddleware
+        from backflow_core.pipeline import Pipeline
+
+        logger.info("Running outside project context, using installed package.")
+    except ImportError as e:
+        logger.error(f"Error importing backflow_core modules: {e}")
+        sys.exit(1)
+
+from Backflows.middleware import MiddlewareManager
+from Backflows.template_project import create_project_structure
+from Backflows.base import BackFlow
 
 
 class UpperAttrMetaclass(type):
@@ -75,11 +108,35 @@ class SpiderRunner:
 
     def find_spiders(self):
         spiders = {}
-        for module in self.spider_modules:
-            mod = importlib.import_module(module)
-            for name, obj in inspect.getmembers(mod):
-                if inspect.isclass(obj) and issubclass(obj, BackFlow) and obj is not BackFlow:
-                    spiders[obj.name] = obj
+        # Check for spiders in the project's 'spiders' directory first
+        if PROJECT_CONTEXT:
+            # 遍历目录下的所有文件
+            for filename in os.listdir(spider_dir):
+                # 只处理 .py 文件，且排除 __init__.py
+                if filename.endswith('.py') and filename != '__init__.py':
+                    module_name = filename[:-3]  # 去掉 .py 后缀
+                    module_path = os.path.join(spider_dir, filename)
+
+                    # 动态加载模块
+                    spec = importlib.util.spec_from_file_location(module_name, module_path)
+                    if spec is None:
+                        continue  # 如果无法加载模块，跳过
+                    mod = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(mod)
+
+                    # 查找符合条件的类
+                    for name, obj in inspect.getmembers(mod):
+                        if inspect.isclass(obj) and issubclass(obj, BackFlow) and obj is not BackFlow:
+                            spiders[obj.name] = obj
+
+        # If not in project context or no spiders found in the project, check installed package
+        if not PROJECT_CONTEXT:
+            for module in self.spider_modules:
+                mod = importlib.import_module(module)
+                for name, obj in inspect.getmembers(mod):
+                    if inspect.isclass(obj) and issubclass(obj, BackFlow) and obj is not BackFlow:
+                        spiders[obj.name] = obj
+
         return spiders
 
     async def process_request(self, request):
@@ -98,7 +155,7 @@ class SpiderRunner:
             request = await self.process_request(request)
             proxy = request.meta.get('proxy')
             try:
-                async with httpx.AsyncClient(proxies=proxy, timeout=30) as client:  # 增加连接超时时间为 30 秒
+                async with httpx.AsyncClient(proxy=proxy, timeout=30) as client:  # 增加连接超时时间为 30 秒
                     if request.method == 'GET':
                         response = await client.get(request.url, headers=request.headers, cookies=request.cookies,
                                                     params=request.params)
@@ -131,8 +188,7 @@ class SpiderRunner:
             response = await self.fetch_page(request)
             if response is not None:
                 async for item in spider.parse(response):
-                    from pipeline import Pipeline
-                    pipeline = Pipeline()
+                    pipeline = Pipeline()  # Use the dynamically imported Pipeline
                     await pipeline.process_item(item)  # Use await here
                 spider.increment_pages_crawled()  # Increment pages crawled
                 self.pages_crawled += 1
@@ -140,37 +196,36 @@ class SpiderRunner:
     async def run(self, name, distributed=False, stop=settings.END_PAGE, step=settings.PAGE_STEP):
         self.start_time = time.time()
         if distributed:
+            # Assuming tasks.py is in the backflow_core when installed, and in the project root when running a project
+            if PROJECT_CONTEXT:
+                try:
+                    from tasks import run_spider
+                except ImportError:
+                    from backflow_core.tasks import run_spider
+            else:
+                from backflow_core.tasks import run_spider
             for page in range(settings.START_PAGE, stop, step):
-                from tasks import run_spider
                 run_spider.delay(name, page)
         else:
-            self.check_settings()
+            self.print_stats()
             tasks = [self.run_single_page(name, page) for page in range(settings.START_PAGE, stop, step)]
             await asyncio.gather(*tasks)
-            self.end_time = time.time()
-            self.print_stats()
-
-    def check_settings(self):
-        try:
-            import settings
-            required_settings = ['MONGO_URI', 'MONGO_DATABASE', 'DATA_FILE_PATH', 'API_ENDPOINT',
-                                 'START_PAGE', 'END_PAGE', 'PAGE_STEP']
-            for setting in required_settings:
-                if not hasattr(settings, setting):
-                    raise ValueError(f"Missing required setting: {setting}")
-        except ImportError:
-            raise ImportError("settings.py file not found")
+        self.end_time = time.time()  # Set end_time here, regardless of distributed mode
+        self.print_stats()
 
     def print_stats(self):
-        total_time = self.end_time - self.start_time
-        print(f"Spider run completed.")
-        print(f"Total pages crawled: {self.pages_crawled}")
-        print(f"Total requests sent: {self.requests_sent}")
-        print(f"Total run time: {total_time:.2f} seconds")
+        if self.end_time is not None and self.start_time is not None:
+            total_time = self.end_time - self.start_time
+            print(f"Spider run completed.")
+            print(f"Total pages crawled: {self.pages_crawled}")
+            print(f"Total requests sent: {self.requests_sent}")
+            print(f"Total run time: {total_time:.2f} seconds")
+        else:
+            print("Spider run completed. Timing information not available.")
 
 
 def create_spider_file(spider_name):
-    from .template import template
+    from Backflows.template import template
     spider_template = template(spider_name=spider_name)
     file_path = os.path.join('spiders', f'{spider_name}.py')
     with open(file_path, 'w') as f:
@@ -194,9 +249,9 @@ def main():
     addspider_parser = subparsers.add_parser("addspider", help="Add a new spider")
     addspider_parser.add_argument("spider_name", default='newspider', help="The name of the new spider to add")
 
-    addspider_parser = subparsers.add_parser("new", help="Add a new project")
-    addspider_parser.add_argument("project_name", default='NewSpiders',
-                                  help="The name of the new spider project to add")
+    new_project_parser = subparsers.add_parser("new", help="Add a new project")
+    new_project_parser.add_argument("project_name", default='NewSpiders',
+                                    help="The name of the new spider project to add")
 
     args = parser.parse_args()
 
@@ -213,6 +268,7 @@ def main():
         create_spider_file(args.spider_name)
     elif args.command == "new":
         create_project_structure(args.project_name)
+        print(f"Project '{args.project_name}' created. Please navigate into the project directory to run spiders.")
     else:
         parser.print_help()
 

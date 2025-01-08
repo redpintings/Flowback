@@ -25,7 +25,7 @@ DATA_FILE_PATH = 'data/output.json'
 API_ENDPOINT = 'http://example.com/api/data'
 
 # Other settings， 前提是你使用了 --page 参数
-START_PAGE = 0  # The default starting page number to crawl
+START_PAGE = 1  # The default starting page number to crawl
 END_PAGE = 20  # The default ending page number to crawl
 PAGE_STEP = 1  # The default step size to crawl the pages
 
@@ -170,7 +170,7 @@ from celery import Celery
 from loguru import logger
 from utils.save_com import Com
 from utils.celery_app import app
-from backflow.runner import SpiderRunner
+from Backflows.runner import SpiderRunner
 import traceback
 import asyncio
 import httpx
@@ -278,7 +278,7 @@ def create_project_structure(project_name):
         (f"{project_name}/conf/local.py", conf()),
         (f"{project_name}/settings.py", settings()),
         (f"{project_name}/downloadMiddleware.py", downloadMiddleware()),
-        (f"{project_name}/pipelines.py", pipeline()),
+        (f"{project_name}/pipeline.py", pipeline()),
         (f"{project_name}/tasks.py", task()),
     ]
 

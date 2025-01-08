@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# @Author  : ysl
-# @File    : setup.py
-# @time    : 2024/6/17 14:30
-
 from setuptools import setup, find_packages
 from setuptools.command.install import install
 import subprocess
@@ -29,12 +23,12 @@ class CustomInstallCommand(install):
                     subprocess.check_call([sys.executable, "-m", "pip", "install", req])
                 except subprocess.CalledProcessError as e:
                     print(f"Failed to install {req}: {e}")
-                    raise
+                    # raise
 
 
 setup(
     name='backflow',
-    version='0.1.5',
+    version='0.2.0',  # Increment the version
     author='ysl',  # 替换为你的名字
     author_email='runfastpluszz@gmail.com',  # 替换为你的邮箱
     description='A simple crawler framework that implements both single run and distributed run based on Celery,'
@@ -44,8 +38,7 @@ setup(
     url='https://github.com/redpintings/Flowback',  # 替换为你的项目 GitHub 仓库地址
     license='MIT',  # 替换为你的开源协议
     packages=find_packages(),
-    py_modules=['downloadMiddleware', 'tasks'],  # 模块
-    data_files=[('config', ['settings.py'])],   # 配置文件
+    # py_modules=['tasks'],  # Remove individual py_modules if they are part of a package
     install_requires=[
         'aiohttp==3.10.11',
         'celery==5.2.7',
@@ -66,6 +59,8 @@ setup(
         'chardet',
         'tenacity',
         'parsel',
+        'jmespath',
+        'redis',
     ],
     entry_points={
         'console_scripts': [

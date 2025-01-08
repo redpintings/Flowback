@@ -17,6 +17,7 @@ pytz
 chardet
 tenacity
 parsel
+redis
 # ronglian-sms-sdk
 -e .
 # Add other dependencies here

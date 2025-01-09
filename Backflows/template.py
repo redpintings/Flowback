@@ -7,10 +7,9 @@
 def template(spider_name):
     spider_template = f"""
 from loguru import logger
-from utils.get_cookie import GetCookie
-from utils.tools import Tools
-from backflow.base import BackFlow
-from backflow.middleware import Request
+from Backflows.base import BackFlow
+from Backflows.middleware import Request
+from parsel import Selector
 import traceback
 
 

@@ -16,17 +16,57 @@ import importlib.util
 import inspect
 from loguru import logger
 
-PROJECT_CONTEXT = False  # Initialize PROJECT_CONTEXT
+PROJECT_CONTEXT = False  # 初始化 PROJECT_CONTEXT
+
+# 过滤掉不需要检查的目录
+EXCLUDED_DIRS = {'venv', '__pycache__', 'build', 'dist'}
 
 
-# Function to check if running within a project context
+# 递归向下检查是否存在 settings.py
+def find_settings_file(base_dir, max_depth=2, current_depth=0):
+    if current_depth > max_depth:  # 超过最大深度则停止
+        return None
+
+    # 检查当前目录
+    for file in os.listdir(base_dir):
+        file_path = os.path.join(base_dir, file)
+        if file == 'settings.py' and os.path.isfile(file_path):
+            return file_path
+
+    # 递归检查子目录
+    for dir_name in os.listdir(base_dir):
+        dir_path = os.path.join(base_dir, dir_name)
+        if os.path.isdir(dir_path) and dir_name not in EXCLUDED_DIRS:
+            found = find_settings_file(dir_path, max_depth, current_depth + 1)
+            if found:
+                return found
+
+    return None
+
+
+# 获取项目上下文
 def is_project_context():
-        return os.path.exists(os.path.join(os.getcwd(), 'settings.py'))
+    current_dir = os.getcwd()
+    settings_path = find_settings_file(current_dir)
+    if settings_path:
+        # 将包含 settings.py 的目录添加到 sys.path
+        sys.path.insert(0, os.path.dirname(settings_path))
+        return settings_path
+    return None
 
 
-# print('is_project_context', os.path.join(os.getcwd()), is_project_context())
-spider_dir = os.path.join(os.getcwd(), 'spiders')
-# print('spider_dir', spider_dir)
+# 主逻辑
+settings_path = is_project_context()
+if settings_path:
+    # settings.py 所在目录
+    settings_dir = os.path.dirname(settings_path)
+    # spiders 目录路径应基于 settings.py 所在目录
+    spider_dir = os.path.join(settings_dir, 'spiders')
+    # print('settings_path:', settings_path)
+    # print('spider_dir:', spider_dir)
+else:
+    print('settings.py 未找到，无法确定项目上下文')
+
 # If in a project context, add the current directory to sys.path
 if is_project_context():
     sys.path.insert(0, os.getcwd())

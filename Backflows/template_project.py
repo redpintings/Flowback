@@ -168,7 +168,6 @@ def task():
     task_template = """
 from celery import Celery
 from loguru import logger
-from utils.save_com import Com
 from utils.celery_app import app
 from Backflows.runner import SpiderRunner
 import traceback
@@ -221,8 +220,8 @@ celery_path = "xxx" # 你的当前的项目路径
 
 def conf_init():
     conf_init = """
-    from .local import *
-    """
+from .local import *
+"""
     return conf_init
 
 
@@ -230,8 +229,8 @@ def spider(spider_name):
     spider_template = f"""
 from loguru import logger
 from utils.tools import Tools
-from backflow.base import BackFlow
-from backflow.middleware import Request
+from Backflows.base import BackFlow
+from Backflows.middleware import Request
 import traceback
 
 class {spider_name.capitalize()}(BackFlow):

@@ -66,7 +66,6 @@ if settings_path:
     # print('spider_dir:', spider_dir)
 else:
     print('settings.py 未找到，无法确定项目上下文')
-
 # If in a project context, add the current directory to sys.path
 if is_project_context():
     sys.path.insert(0, os.getcwd())
@@ -76,7 +75,7 @@ if is_project_context():
         from downloadMiddleware import UserAgentMiddleware, RetryMiddleware, ProxyMiddleware
         from pipeline import Pipeline
 
-        logger.info("Running in project context.")
+        # logger.info("Running in project context.")
     except ImportError as e:
         logger.error(f"Error importing project modules: {e}")
         sys.exit(1)  # Exit if essential project modules are missing

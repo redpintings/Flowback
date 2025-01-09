@@ -28,7 +28,7 @@ class CustomInstallCommand(install):
 
 setup(
     name='backflow',
-    version='0.2.2',  # Increment the version
+    version='0.2.3',  # Increment the version
     author='ysl',  # 替换为你的名字
     author_email='runfastpluszz@gmail.com',  # 替换为你的邮箱
     description='A simple crawler framework that implements both single run and distributed run based on Celery,'

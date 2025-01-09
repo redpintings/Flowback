@@ -5,7 +5,7 @@
 
 import random
 from loguru import logger
-from . import settings
+import settings
 from Backflows.middleware import DownloadMiddleware
 
 

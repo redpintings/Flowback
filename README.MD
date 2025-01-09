@@ -1,7 +1,6 @@
 <div align="center">
-    <h1>backflow</h1>
+    <h1>Backflow</h1>
 </div>
-
 
 <div align="center">
     <a href="https://github.com/redpintings/Flowback">
@@ -11,48 +10,55 @@
 
 <div align="center">
     <a href="https://pypi.org/project/backflow/">
-        <img alt="GitHub Actions Workflow Status" src="https://image.dzplus.dzng.com/2024/06/06/17176696807966.jpg" />
+        <img alt="PyPI Version" src="https://image.dzplus.dzng.com/2024/06/06/17176696807966.jpg" />
     </a>
     <a href="https://github.com/redpintings/Flowback/issues">
-        <img alt="GitHub Release" src="https://image.dzplus.dzng.com/2024/06/06/17176697207099.jpg" />
+        <img alt="GitHub Issues" src="https://image.dzplus.dzng.com/2024/06/06/17176697207099.jpg" />
     </a>
     <a href="https://github.com/redpintings/Flowback">
-        <img alt="Discord" src="https://image.dzplus.dzng.com/2024/06/06/17176697507539.jpg" />
+        <img alt="GitHub Repository" src="https://image.dzplus.dzng.com/2024/06/06/17176697507539.jpg" />
     </a>
 </div>
 
+Backflow 是一个简洁且灵活的爬虫框架，支持使用 Celery 实现分布式爬取。你可以根据自己的需求编写爬虫代码，并且框架提供了丰富的配置选项和扩展能力。
 
-这是一个非常简洁的爬虫框架， 你可以用来写你喜欢的代码，灵活性非常高； 支持使用celery实现分布式;
-
-
-### 目录
+## 目录
 
 - [🎯 功能](#功能)
 - [💻 运行平台](#运行平台)
 - [🔧 运行环境](#运行环境)
-- [🏃‍ Quick start](#Quick start)
-    - [安装依赖](#安装依赖包)
-    - [配置文件](#修改配置文件conf And settings)
+- [🏃‍ Quick Start](#quick-start)
+    - [安装依赖](#安装依赖)
+    - [修改配置文件](#修改配置文件)
     - [运行程序](#运行程序)
-    - [分布式](#分布式运行 Execute Cellery Distributed)
-    - [添加新爬虫](#添加新爬虫 新增名为newspider的爬虫)
+    - [分布式运行](#分布式运行)
+    - [添加新爬虫](#添加新爬虫)
 - [💼 服务器配置](#服务器配置)
-- [🕷️ 爬虫代码模版](#模版爬虫代码)
+- [🕷️ 爬虫代码模板](#爬虫代码模板)
 - [👨 框架运行步骤](#框架运行步骤)
 - [❓ 注意事项](#注意事项)
 
-### 运行平台
+## 功能
 
-- [x] liunx / macos / windows
+- 支持单机多线程爬取
+- 支持分布式爬取（基于 Celery）
+- 灵活的配置选项
+- 易于扩展的爬虫模板
 
-### 运行环境
+## 运行平台
+
+- [x] Linux
+- [x] macOS
+- [x] Windows
+
+## 运行环境
 
 - Python 3.9+
-- liunx/windows
+- Linux / Windows
 
-### Quick start
+## Quick Start
 
-#### 安装依赖包
+### 安装依赖
 
 ```bash
 pip install backflow
@@ -172,11 +178,7 @@ demo server:
 
 ```
 ### 框架运行步骤
-<div align="center">
-    <a href="https://github.com/redpintings/Flowback">
-        <img alt="GitHub Actions Workflow Status" src="https://image.dzplus.dzng.com/2024/07/04/17200855857642.jpg" />
-    </a>
-</div>
+
 
 1. **启动程序**：
    在命令行中运行`runner.py`，并传入相应的参数，例如爬虫的名称、是否以分布式模式运行、停止页码和步长。

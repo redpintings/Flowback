@@ -5,18 +5,18 @@
 
 <div align="center">
     <a href="https://github.com/redpintings/Flowback">
-        <img alt="GitHub Actions Workflow Status" src="https://image.dzplus.dzng.com/2024/06/06/17176669138534.jpg" />
+        <img alt="GitHub Actions Workflow Status" src="https://image.dzplus.dzng.com/2025/01/09/17364137282465.jpg" />
     </a>
 </div>
 
 <div align="center">
-    <a href="">
+    <a href="https://pypi.org/project/backflow/">
         <img alt="GitHub Actions Workflow Status" src="https://image.dzplus.dzng.com/2024/06/06/17176696807966.jpg" />
     </a>
-    <a href="">
+    <a href="https://github.com/redpintings/Flowback/issues">
         <img alt="GitHub Release" src="https://image.dzplus.dzng.com/2024/06/06/17176697207099.jpg" />
     </a>
-    <a href="">
+    <a href="https://github.com/redpintings/Flowback">
         <img alt="Discord" src="https://image.dzplus.dzng.com/2024/06/06/17176697507539.jpg" />
     </a>
 </div>
@@ -28,10 +28,9 @@
 ### 目录
 
 - [🎯 功能](#功能)
-- [✨ 新特性 TODO](#新特性-todo)
 - [💻 运行平台](#运行平台)
 - [🔧 运行环境](#运行环境)
-- [🏃‍ 使用方法](#使用方法)
+- [🏃‍ Quick start](#Quick start)
     - [安装依赖](#安装依赖包)
     - [配置文件](#修改配置文件conf And settings)
     - [运行程序](#运行程序)
@@ -51,12 +50,12 @@
 - Python 3.9+
 - liunx/windows
 
-### 使用方法
+### Quick start
 
 #### 安装依赖包
 
 ```bash
-pip install -r requirements.txt
+pip install backflow
 ```
 
 #### 修改配置文件conf And settings

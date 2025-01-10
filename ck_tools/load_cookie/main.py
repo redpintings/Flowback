@@ -57,7 +57,7 @@ class CK:
 
 
 if __name__ == '__main__':
-    domain_name_lst = ['163.com', 'yidianzixun.com', 'baidu.com', 'pdnews.cn', 'toutiao.com', 'sina.com.cn']
+    domain_name_lst = ['toutiao.com', 'sina.com.cn']
     cks = CK()
     cookies_dict = {}
     for key, ck in cks.load(domain_name_lst):

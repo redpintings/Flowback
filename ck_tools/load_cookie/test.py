@@ -66,7 +66,3 @@ if __name__ == '__main__':
         ck[cookie['name']] = cookie['value']
     print(get_id(ck=ck))
 
-
-
-
-# yidianzixun.com {'wuid': '299184021069222', 'wuid_createAt': '2024-05-15 16:10:38', 'DID': 'nodec7ab9c7f4fe18a4e', 'JSESSIONID': '17151bb81f96dfd2d433f7423e63cd6f46c067374c236983b0281f9f9696857b', 'login-label': '2013547974', 'BUILD_VERSION': 's8Nm8o3wsCbJ1719459987935'}

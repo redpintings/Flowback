@@ -20,7 +20,7 @@
     </a>
 </div>
 
-Backflow 是一个简洁且灵活的爬虫框架，目前处于开始测试阶段，支持使用 [Celery](https://github.com/celery/celery) 实现分布式爬取。你可以根据自己的需求编写爬虫代码，并且框架提供了丰富的配置选项和扩展能力。
+Backflow 是一个简洁且灵活的爬虫框架，目前处于开始测试阶段，支持使用 [Celery](https://github.com/celery/celery) 实现分布式采集。你可以根据自己的需求编写爬虫代码。
 
 ## 目录
 
@@ -64,19 +64,36 @@ Backflow 是一个简洁且灵活的爬虫框架，目前处于开始测试阶�
 pip install backflow
 ```
 
-#### 修改配置文件conf And settings
+#### 修改配置文件conf/local.py  And settings
 
 ```yaml
-celery:
-  host: 127.0.0.1
-  port: 27017
-  xxxx: xxxx
+CeleryConf
 
-es:
-  host: 127.0.0.1
-  port: 9200
-...
+REDIS_NAME = 'redis'
+REDIS_HOST = "127.0.0.1"
+REDIS_POST = 6379
+REDIS_DB_BROKER = 10
+REDIS_DB_RESULT = 11
+REDIS_PWD = ''
+```
+```yaml
+Setting Parameter
+  
+START_PAGE = 1  # The default starting page number to crawl
+END_PAGE = 10  # The default ending page number to crawl
+PAGE_STEP = 1  # The default step size to crawl the pages
 
+MAX_RETRIES = 3  # The maximum number of retries for each request
+
+# END_PAGE / PAGE_STEP = TotalNumber # total number of pages to crawl
+# The MAX_CONCURRENT_REQUESTS parameter needs to be greater than the TotalNumber
+MAX_CONCURRENT_REQUESTS = 300  # The maximum number of concurrent requests:
+# Select the enabled middleware
+MIDDLEWARES = [
+    'UserAgentMiddleware',
+    'RetryMiddleware',
+    # 'ProxyMiddleware',  # Uncomment to use
+]
 ```
 
 #### 运行程序
@@ -89,6 +106,7 @@ backflow list
 # 新建一个爬虫项目
 backflow new newspider  # Change newspider to your project name
 # 运行单个爬虫
+# If you do not include the -- page parameter afterwards, the default page is the START-PAGE END-PAGE parameter in the settings
 backflow crawl baijiahao  # Single run
 backflow crawl jinritoutiao  # Single run
 

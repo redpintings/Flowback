@@ -86,6 +86,8 @@ es:
 backflow --help
 # 查看目前所有的回流平台的爬虫列表
 backflow list
+# 新建一个爬虫项目
+backflow new newspider  # Change newspider to your project name
 # 运行单个爬虫
 backflow crawl baijiahao  # Single run
 backflow crawl jinritoutiao  # Single run
